@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Trend Prediction - Confidential Analytics Platform</title>
+    <meta name="description" content="Fully Homomorphic Encryption powered prediction markets for confidential trend analysis">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 12px;
+            font-size: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            border-left: 4px solid;
+        }
+
+        .status.success {
+            background: #c6f6d5;
+            color: #25543e;
+            border-left-color: #38a169;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border-left-color: #e53e3e;
+        }
+
+        .status.info {
+            background: #bee3f8;
+            color: #2a4365;
+            border-left-color: #3182ce;
+        }
+
+        .status.warning {
+            background: #faf089;
+            color: #744210;
+            border-left-color: #d69e2e;
+        }
+
+        .markets-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .market-item {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .market-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .market-item h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .market-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .prediction-item {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-item:hover {
+            border-color: #667eea;
+        }
+
+        .prediction-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+
+        .prediction-status.active {
+            background: #fef5e7;
+            color: #744210;
+        }
+
+        .prediction-status.resolved {
+            background: #c6f6d5;
+            color: #25543e;
+        }
+
+        .prediction-status.pending {
+            background: #bee3f8;
+            color: #2a4365;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-section {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .info-section h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            color: #4a5568;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: #38a169;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .network-info {
+            background: linear-gradient(135deg, #e6fffa 0%, #c6f6d5 100%);
+            border: 2px solid #38a169;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .network-info strong {
+            color: #25543e;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .market-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 Privacy Trend Prediction</h1>
+            <p>Confidential prediction analysis powered by Fully Homomorphic Encryption on Ethereum</p>
+        </div>
+
+        <div class="card">
+            <h2>🔗 Wallet Connection</h2>
+            <button id="connectBtn" class="btn">Connect MetaMask Wallet</button>
+            <div id="walletStatus" class="status hidden"></div>
+            <div class="network-info">
+                <strong>Network:</strong> Sepolia Testnet | <strong>Contract:</strong> 0x412743AA4124569d0CE6D9B4CD3AdedCc68C0EA0
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📈 Submit Encrypted Prediction</h2>
+                <div class="form-group">
+                    <label for="marketSelect">Prediction Market:</label>
+                    <select id="marketSelect">
+                        <option value="">Choose a market...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="trendValue">Predicted Value:</label>
+                    <input type="number" id="trendValue" placeholder="Enter your prediction value" step="0.01">
+                    <small style="color: #718096; font-size: 12px;">This value will be encrypted using FHE</small>
+                </div>
+                <div class="form-group">
+                    <label for="confidence">Confidence Level (0-100%):</label>
+                    <input type="number" id="confidence" placeholder="Your confidence percentage" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="stakeAmount">Stake Amount (ETH):</label>
+                    <input type="number" id="stakeAmount" placeholder="Minimum 0.01 ETH" step="0.001" min="0.01" value="0.01">
+                </div>
+                <button id="submitPredictionBtn" class="btn">Submit Encrypted Prediction</button>
+                <div id="predictionStatus" class="status hidden"></div>
+            </div>
+
+            <div class="card">
+                <h2>🏪 Active Prediction Markets</h2>
+                <div id="marketsList" class="markets-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading markets from blockchain...</p>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="refreshMarketsBtn" class="btn secondary">Refresh Markets</button>
+                    <button id="createMarketsBtn" class="btn" style="background: linear-gradient(135deg, #38a169 0%, #25543e 100%);">Create Missing Markets</button>
+                </div>
+                <div id="marketCreationStatus" class="status hidden"></div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>📊 My Predictions</h2>
+                <div id="userPredictions">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading your predictions...</p>
+                    </div>
+                </div>
+                <button id="refreshPredictionsBtn" class="btn secondary">Refresh Predictions</button>
+            </div>
+
+            <div class="card">
+                <h2>💰 Rewards & Statistics</h2>
+                <div id="rewardsInfo" style="margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        <div class="stat-item">
+                            <strong>Available Rewards</strong><br>
+                            <span id="availableRewards" style="color: #38a169; font-size: 1.2rem;">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong>Accuracy Score</strong><br>
+                            <span id="accuracyScore" style="color: #3182ce; font-size: 1.2rem;">Loading...</span>
+                        </div>
+                        <div class="stat-item">
+                            <strong>Total Predictions</strong><br>
+                            <span id="totalPredictions" style="color: #805ad5; font-size: 1.2rem;">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="claimRewardsBtn" class="btn">Claim Available Rewards</button>
+                <div id="rewardsStatus" class="status hidden"></div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>🛡️ Privacy-First Prediction Platform</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+                <div>
+                    <h4 style="color: #4a5568; margin-bottom: 10px;">🔒 Fully Homomorphic Encryption</h4>
+                    <ul class="feature-list">
+                        <li>Predictions remain encrypted on-chain</li>
+                        <li>Computation on encrypted data</li>
+                        <li>Zero-knowledge verification</li>
+                        <li>Privacy-preserving analytics</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #4a5568; margin-bottom: 10px;">📈 Prediction Markets</h4>
+                    <ul class="feature-list">
+                        <li>Cryptocurrency price trends</li>
+                        <li>Stock market volatility</li>
+                        <li>Privacy technology adoption</li>
+                        <li>DeFi total value locked</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #4a5568; margin-bottom: 10px;">💎 Rewards System</h4>
+                    <ul class="feature-list">
+                        <li>Accuracy-based rewards</li>
+                        <li>Minimum 0.01 ETH stake</li>
+                        <li>Automatic distribution</li>
+                        <li>Performance tracking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        // Ensure ethers is properly loaded from CDN
+        if (typeof ethers === 'undefined') {
+            console.error('❌ Ethers.js failed to load from CDN');
+            alert('Failed to load required libraries. Please refresh the page.');
+        } else {
+            console.log('✅ Ethers.js loaded successfully:', ethers.version);
+        }
+    </script>
+    <script>
+        // Smart contract configuration
+        const CONTRACT_ADDRESS = "0x412743AA4124569d0CE6D9B4CD3AdedCc68C0EA0";
+        const SEPOLIA_CHAIN_ID = "0xaa36a7"; // 11155111 in hex
+
+        // Complete contract ABI for Privacy Trend Prediction
+        const CONTRACT_ABI = [
+            "function submitPrediction(string memory category, uint32 trendValue, uint64 confidence) external payable",
+            "function createMarket(string memory category) external",
+            "function getMarketInfo(string memory category) external view returns (uint256 totalStaked, uint256 totalPredictions, bool isActive, uint256 currentDataValue, uint256 predictorCount)",
+            "function getPredictionInfo(uint32 predictionId) external view returns (address predictor, uint256 stake, uint256 timestamp, uint256 deadline, bool isActive, bool isResolved, uint256 reward)",
+            "function getUserRewards(address user) external view returns (uint256)",
+            "function getUserAccuracy(address user) external view returns (uint256)",
+            "function claimRewards() external",
+            "function getActiveMarkets() external view returns (string[] memory)",
+            "function hasActivePrediction(string memory category, address user) external view returns (bool)",
+            "function currentPredictionId() external view returns (uint32)",
+            "function owner() external view returns (address)",
+            "event MarketCreated(string indexed category, uint256 timestamp)",
+            "event PredictionSubmitted(uint32 indexed predictionId, address indexed predictor, string category)",
+            "event PredictionResolved(uint32 indexed predictionId, bool isCorrect, uint256 reward)",
+            "event RewardClaimed(address indexed user, uint256 amount)"
+        ];
+
+        // Global variables
+        let provider;
+        let signer;
+        let contract;
+        let userAddress;
+        let isConnected = false;
+
+        // Predefined markets (these should match the contract)
+        const AVAILABLE_MARKETS = [
+            { id: "crypto_price_trends", name: "Cryptocurrency Price Trends" },
+            { id: "stock_market_volatility", name: "Stock Market Volatility Index" },
+            { id: "privacy_adoption_rate", name: "Privacy Technology Adoption Rate" },
+            { id: "defi_tvl_trends", name: "DeFi Total Value Locked Trends" }
+        ];
+
+        // Initialize application with proper dependency checks
+        async function init() {
+            console.log("🚀 Initializing Privacy Trend Prediction Platform...");
+
+            // Check if ethers is properly loaded
+            if (typeof ethers === 'undefined') {
+                console.error('❌ Ethers.js library not loaded');
+                showStatus('walletStatus', '❌ Required libraries not loaded. Please refresh the page.', 'error');
+                return;
+            }
+
+            // Check if we're on a secure context (HTTPS or localhost)
+            if (!window.isSecureContext && location.hostname !== 'localhost') {
+                console.warn('⚠️ Not running in secure context - some features may not work');
+                showStatus('walletStatus', '⚠️ Please use HTTPS for full functionality', 'warning');
+            }
+
+            console.log("📊 Populating market selection...");
+            populateMarketSelect();
+
+            // Check if wallet is already connected
+            if (typeof window.ethereum !== 'undefined') {
+                console.log("🔍 Checking for existing wallet connection...");
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                    if (accounts.length > 0) {
+                        console.log("🔗 Found existing wallet connection, auto-connecting...");
+                        await connectWallet();
+                    } else {
+                        console.log("📝 No existing wallet connection found");
+                    }
+                } catch (error) {
+                    console.log("❌ Error checking existing wallet connection:", error);
+                }
+            } else {
+                console.log("🦊 MetaMask not detected");
+                showStatus('walletStatus', '🦊 MetaMask not detected. Please install MetaMask to use this application.', 'info');
+            }
+
+            console.log("📈 Loading initial market data...");
+            await loadMarkets();
+
+            console.log("✅ Application initialization completed");
+        }
+
+        // Enhanced wallet connection flow with proper Sepolia handling
+        async function connectWallet() {
+            try {
+                console.log("Starting wallet connection process...");
+
+                // Step 1: Detection - Check window.ethereum (MetaMask provider)
+                if (typeof window.ethereum === 'undefined') {
+                    showStatus('walletStatus', '❌ MetaMask not detected. Please install MetaMask extension to continue.', 'error');
+                    return;
+                }
+
+                console.log("✅ MetaMask detected");
+                showStatus('walletStatus', '🔍 MetaMask detected, requesting access...', 'info');
+
+                // Step 2: Request Access - Use eth_requestAccounts to get user permission
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+
+                if (accounts.length === 0) {
+                    showStatus('walletStatus', '❌ No accounts found. Please unlock MetaMask and try again.', 'error');
+                    return;
+                }
+
+                console.log("✅ Account access granted:", accounts[0]);
+                showStatus('walletStatus', '🔗 Account access granted, verifying network...', 'info');
+
+                // Step 3: Network Validation - Verify connection to Sepolia testnet
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                const network = await provider.getNetwork();
+
+                console.log("Current network:", network.chainId, network.name);
+
+                if (network.chainId !== 11155111) {
+                    console.log("❌ Wrong network detected, switching to Sepolia...");
+                    showStatus('walletStatus', '🔄 Wrong network detected. Switching to Sepolia testnet...', 'warning');
+
+                    // Step 4: Network Switch - Automatically switch/add Sepolia if needed
+                    const switchResult = await switchToSepolia();
+                    if (!switchResult) {
+                        return; // Stop if network switch failed
+                    }
+                }
+
+                // Step 5: Provider Setup - Create ethers.js BrowserProvider and signer
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                console.log("✅ Provider and signer initialized");
+                showStatus('walletStatus', '📝 Initializing smart contract connection...', 'info');
+
+                // Step 6: Contract Initialization - Create contract instance
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                // Test contract connection
+                try {
+                    await contract.owner();
+                    console.log("✅ Contract connection verified");
+                } catch (contractError) {
+                    console.error("❌ Contract connection failed:", contractError);
+                    showStatus('walletStatus', '❌ Failed to connect to smart contract. Please check network and try again.', 'error');
+                    return;
+                }
+
+                // Step 7: State Update - Update with account and contract
+                isConnected = true;
+                const shortAddress = `${userAddress.substring(0, 6)}...${userAddress.substring(38)}`;
+
+                // Success handling - Display success message
+                showStatus('walletStatus', '✅ Connected to Sepolia successfully! Welcome to Privacy Prediction Platform.', 'success');
+
+                // Update UI to show interface instead of connect button
+                document.getElementById('connectBtn').textContent = `Connected: ${shortAddress}`;
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('connectBtn').style.background = 'linear-gradient(135deg, #38a169 0%, #25543e 100%)';
+
+                console.log("✅ Wallet connection completed successfully:", userAddress);
+
+                // Get initial state - Load user data and markets
+                showStatus('walletStatus', '📊 Loading your data and market information...', 'info');
+                await Promise.all([
+                    loadUserData(),
+                    loadMarkets()
+                ]);
+
+                showStatus('walletStatus', '✅ All data loaded successfully! You can now start making predictions.', 'success');
+
+            } catch (error) {
+                console.error('❌ Wallet connection error:', error);
+
+                let errorMessage = 'Connection failed';
+                if (error.code === 4001) {
+                    errorMessage = '❌ Connection rejected by user. Please approve the connection request.';
+                } else if (error.code === -32002) {
+                    errorMessage = '⏳ Connection request pending. Please check MetaMask for pending requests.';
+                } else if (error.message.includes('network')) {
+                    errorMessage = '❌ Network error. Please check your internet connection and try again.';
+                } else {
+                    errorMessage = `❌ Connection failed: ${error.message}`;
+                }
+
+                showStatus('walletStatus', errorMessage, 'error');
+            }
+        }
+
+        // Enhanced Sepolia network switching with automatic addition
+        async function switchToSepolia() {
+            try {
+                console.log("🔄 Attempting to switch to Sepolia testnet...");
+
+                // First, try to switch to existing Sepolia network
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: SEPOLIA_CHAIN_ID }],
+                });
+
+                console.log("✅ Successfully switched to Sepolia testnet");
+                showStatus('walletStatus', '✅ Network switched to Sepolia successfully! Reconnecting...', 'success');
+
+                // Wait a moment for network switch to complete, then retry connection
+                setTimeout(() => {
+                    connectWallet();
+                }, 1500);
+
+                return true;
+
+            } catch (switchError) {
+                console.log("❌ Network switch failed:", switchError.code, switchError.message);
+
+                // Error 4902 means the network is not added to MetaMask yet
+                if (switchError.code === 4902) {
+                    console.log("🔗 Sepolia network not found, attempting to add it...");
+                    showStatus('walletStatus', '🔗 Sepolia network not found. Adding Sepolia testnet to MetaMask...', 'info');
+
+                    try {
+                        // Add Sepolia network to MetaMask
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: SEPOLIA_CHAIN_ID,
+                                chainName: 'Sepolia Testnet',
+                                nativeCurrency: {
+                                    name: 'Sepolia ETH',
+                                    symbol: 'ETH',
+                                    decimals: 18
+                                },
+                                rpcUrls: [
+                                    'https://sepolia.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161',
+                                    'https://rpc.sepolia.org',
+                                    'https://rpc2.sepolia.org'
+                                ],
+                                blockExplorerUrls: ['https://sepolia.etherscan.io']
+                            }]
+                        });
+
+                        console.log("✅ Sepolia network added successfully");
+                        showStatus('walletStatus', '✅ Sepolia testnet added successfully! Connecting...', 'success');
+
+                        // After adding the network, retry connection
+                        setTimeout(() => {
+                            connectWallet();
+                        }, 1500);
+
+                        return true;
+
+                    } catch (addError) {
+                        console.error("❌ Failed to add Sepolia network:", addError);
+
+                        if (addError.code === 4001) {
+                            showStatus('walletStatus', '❌ Network addition rejected. Please manually add Sepolia testnet in MetaMask settings.', 'error');
+                        } else {
+                            showStatus('walletStatus', '❌ Failed to add Sepolia network. Please add it manually in MetaMask.', 'error');
+                        }
+                        return false;
+                    }
+
+                } else if (switchError.code === 4001) {
+                    // User rejected the network switch
+                    showStatus('walletStatus', '❌ Network switch rejected. Please manually switch to Sepolia testnet in MetaMask.', 'error');
+                    return false;
+
+                } else {
+                    // Other errors
+                    console.error("❌ Unexpected network switch error:", switchError);
+                    showStatus('walletStatus', '❌ Failed to switch network. Please manually switch to Sepolia testnet in MetaMask.', 'error');
+                    return false;
+                }
+            }
+        }
+
+        // Submit encrypted prediction to blockchain
+        async function submitPrediction() {
+            if (!isConnected) {
+                showStatus('predictionStatus', 'Please connect your wallet first', 'error');
+                return;
+            }
+
+            try {
+                const market = document.getElementById('marketSelect').value;
+                const trendValue = document.getElementById('trendValue').value;
+                const confidence = document.getElementById('confidence').value;
+                const stakeAmount = document.getElementById('stakeAmount').value;
+
+                // Validation
+                if (!market || !trendValue || !confidence || !stakeAmount) {
+                    showStatus('predictionStatus', 'Please fill in all fields', 'error');
+                    return;
+                }
+
+                if (parseFloat(stakeAmount) < 0.01) {
+                    showStatus('predictionStatus', 'Minimum stake amount is 0.01 ETH', 'error');
+                    return;
+                }
+
+                if (parseInt(confidence) < 0 || parseInt(confidence) > 100) {
+                    showStatus('predictionStatus', 'Confidence must be between 0 and 100', 'error');
+                    return;
+                }
+
+                // Check if user already has active prediction in this market
+                showStatus('predictionStatus', '🔍 Checking existing predictions...', 'info');
+                const hasActive = await contract.hasActivePrediction(market, userAddress);
+                if (hasActive) {
+                    showStatus('predictionStatus', '❌ You already have an active prediction in this market. Please wait for resolution or choose another market.', 'error');
+                    return;
+                }
+
+                showStatus('predictionStatus', '🔐 Encrypting prediction data and submitting to blockchain...', 'info');
+
+                // Convert values to appropriate types
+                const trendValueUint32 = Math.floor(parseFloat(trendValue));
+                const confidenceUint64 = parseInt(confidence);
+                const stakeWei = ethers.utils.parseEther(stakeAmount);
+
+                console.log("📊 Prediction data:", {
+                    market,
+                    trendValue: trendValueUint32,
+                    confidence: confidenceUint64,
+                    stake: stakeAmount + " ETH"
+                });
+
+                // Submit prediction transaction with manual gas limit
+                const gasLimit = ethers.BigNumber.from("500000"); // 500k gas limit
+                const gasPrice = await provider.getGasPrice();
+                const adjustedGasPrice = gasPrice.mul(120).div(100); // 20% higher than current
+
+                console.log("⛽ Gas settings:", {
+                    gasLimit: gasLimit.toString(),
+                    gasPrice: ethers.utils.formatUnits(adjustedGasPrice, "gwei") + " gwei"
+                });
+
+                const tx = await contract.submitPrediction(
+                    market,
+                    trendValueUint32,
+                    confidenceUint64,
+                    {
+                        value: stakeWei,
+                        gasLimit: gasLimit,
+                        gasPrice: adjustedGasPrice
+                    }
+                );
+
+                showStatus('predictionStatus', '⏳ Transaction submitted to blockchain. Waiting for confirmation...', 'info');
+                console.log("📝 Transaction hash:", tx.hash);
+
+                const receipt = await tx.wait();
+                console.log('✅ Prediction submitted successfully:', receipt);
+
+                showStatus('predictionStatus', '✅ Prediction submitted successfully! Your encrypted data is now secured on-chain with FHE technology.', 'success');
+                clearPredictionForm();
+
+                // Refresh data to show new prediction
+                showStatus('predictionStatus', '📊 Refreshing your data...', 'info');
+                await Promise.all([
+                    loadUserData(),
+                    loadMarkets()
+                ]);
+
+                showStatus('predictionStatus', '🎉 All data updated! Your prediction is now active and encrypted on Sepolia testnet.', 'success');
+
+            } catch (error) {
+                console.error('❌ Prediction submission error:', error);
+
+                let errorMessage = '❌ Failed to submit prediction';
+
+                // Enhanced error handling with specific messages
+                if (error.code === 4001) {
+                    errorMessage = '❌ Transaction rejected by user. Please approve the transaction to submit your prediction.';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = '💰 Insufficient ETH balance. Please add more Sepolia ETH to your wallet and try again.';
+                } else if (error.message.includes('user rejected')) {
+                    errorMessage = '❌ Transaction cancelled by user. Your prediction was not submitted.';
+                } else if (error.message.includes('network')) {
+                    errorMessage = '🌐 Network error. Please check your connection and ensure you are on Sepolia testnet.';
+                } else if (error.message.includes('gas')) {
+                    errorMessage = '⛽ Gas estimation failed. Please try again with a higher gas limit.';
+                } else if (error.message.includes('revert')) {
+                    // Parse revert reason from error message
+                    if (error.message.includes('Market does not exist or inactive')) {
+                        errorMessage = '🏪 Market does not exist. Please use "Create Missing Markets" button first.';
+                    } else if (error.message.includes('Already has active prediction')) {
+                        errorMessage = '📊 You already have an active prediction in this market.';
+                    } else if (error.message.includes('Insufficient stake')) {
+                        errorMessage = '💰 Stake amount too low. Minimum is 0.01 ETH.';
+                    } else {
+                        errorMessage = '📜 Smart contract rejected the transaction. Please check your inputs and try again.';
+                    }
+                } else if (error.message.includes('UNPREDICTABLE_GAS_LIMIT')) {
+                    errorMessage = '⛽ Gas estimation failed. Using manual gas limit - please try again.';
+                } else if (error.data?.message) {
+                    errorMessage = `❌ Contract error: ${error.data.message}`;
+                } else if (error.reason) {
+                    errorMessage = `❌ Transaction failed: ${error.reason}`;
+                }
+
+                showStatus('predictionStatus', errorMessage, 'error');
+            }
+        }
+
+        // Create missing markets on the blockchain
+        async function createMissingMarkets() {
+            if (!isConnected) {
+                showStatus('marketCreationStatus', '❌ Please connect your wallet first', 'error');
+                return;
+            }
+
+            try {
+                showStatus('marketCreationStatus', '🔍 Checking which markets need to be created...', 'info');
+
+                const marketsToCreate = [];
+
+                // Check each predefined market
+                for (const marketDef of AVAILABLE_MARKETS) {
+                    try {
+                        const marketInfo = await contract.getMarketInfo(marketDef.id);
+                        if (!marketInfo.isActive && marketInfo.totalStaked.eq(0)) {
+                            marketsToCreate.push(marketDef);
+                        }
+                    } catch (error) {
+                        // Market doesn't exist, add to creation list
+                        marketsToCreate.push(marketDef);
+                    }
+                }
+
+                if (marketsToCreate.length === 0) {
+                    showStatus('marketCreationStatus', '✅ All markets already exist and are active!', 'success');
+                    return;
+                }
+
+                showStatus('marketCreationStatus', `🏗️ Creating ${marketsToCreate.length} missing markets...`, 'info');
+
+                const gasLimit = ethers.BigNumber.from("200000"); // 200k gas per market creation
+                const gasPrice = await provider.getGasPrice();
+                const adjustedGasPrice = gasPrice.mul(120).div(100);
+
+                let createdCount = 0;
+
+                for (const market of marketsToCreate) {
+                    try {
+                        console.log(`🏪 Creating market: ${market.name}`);
+                        showStatus('marketCreationStatus', `🏗️ Creating "${market.name}" market...`, 'info');
+
+                        const tx = await contract.createMarket(market.id, {
+                            gasLimit: gasLimit,
+                            gasPrice: adjustedGasPrice
+                        });
+
+                        console.log(`📝 Market creation transaction: ${tx.hash}`);
+                        await tx.wait();
+
+                        createdCount++;
+                        console.log(`✅ Market "${market.name}" created successfully`);
+
+                    } catch (error) {
+                        console.error(`❌ Failed to create market "${market.name}":`, error);
+
+                        if (error.message.includes('Only owner')) {
+                            showStatus('marketCreationStatus', '❌ Only contract owner can create markets. Please contact administrator.', 'error');
+                            return;
+                        }
+                    }
+                }
+
+                if (createdCount > 0) {
+                    showStatus('marketCreationStatus', `✅ Successfully created ${createdCount} markets! Refreshing market list...`, 'success');
+
+                    // Refresh markets after creation
+                    setTimeout(async () => {
+                        await loadMarkets();
+                        showStatus('marketCreationStatus', '🎉 All markets are now ready for predictions!', 'success');
+                    }, 2000);
+                } else {
+                    showStatus('marketCreationStatus', '❌ No markets were created. Please check permissions.', 'error');
+                }
+
+            } catch (error) {
+                console.error('❌ Market creation error:', error);
+
+                let errorMessage = '❌ Failed to create markets';
+                if (error.message.includes('Only owner')) {
+                    errorMessage = '❌ Only contract owner can create markets';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = '💰 Insufficient ETH balance for market creation';
+                } else if (error.code === 4001) {
+                    errorMessage = '❌ Market creation cancelled by user';
+                }
+
+                showStatus('marketCreationStatus', errorMessage, 'error');
+            }
+        }
+
+        // Load markets from blockchain
+        async function loadMarkets() {
+            try {
+                const marketsList = document.getElementById('marketsList');
+
+                if (!isConnected) {
+                    marketsList.innerHTML = '<p style="text-align: center; color: #718096;">Connect wallet to view markets</p>';
+                    return;
+                }
+
+                marketsList.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading markets from blockchain...</p></div>';
+
+                const markets = [];
+
+                // Get market information for each predefined market
+                for (const marketDef of AVAILABLE_MARKETS) {
+                    try {
+                        const marketInfo = await contract.getMarketInfo(marketDef.id);
+                        markets.push({
+                            id: marketDef.id,
+                            name: marketDef.name,
+                            totalStaked: ethers.utils.formatEther(marketInfo.totalStaked),
+                            totalPredictions: marketInfo.totalPredictions.toString(),
+                            isActive: marketInfo.isActive,
+                            predictorCount: marketInfo.predictorCount.toString()
+                        });
+                    } catch (error) {
+                        console.log(`Market ${marketDef.id} not found or inactive`);
+                    }
+                }
+
+                // Display markets
+                if (markets.length === 0) {
+                    marketsList.innerHTML = '<p style="text-align: center; color: #718096;">No active markets found</p>';
+                    return;
+                }
+
+                marketsList.innerHTML = '';
+                markets.forEach(market => {
+                    const marketElement = document.createElement('div');
+                    marketElement.className = 'market-item';
+                    marketElement.innerHTML = `
+                        <h3>${market.name}</h3>
+                        <div class="market-stats">
+                            <div class="stat-item">
+                                <strong>Total Staked</strong><br>
+                                ${parseFloat(market.totalStaked).toFixed(4)} ETH
+                            </div>
+                            <div class="stat-item">
+                                <strong>Predictions</strong><br>
+                                ${market.totalPredictions}
+                            </div>
+                            <div class="stat-item">
+                                <strong>Participants</strong><br>
+                                ${market.predictorCount}
+                            </div>
+                            <div class="stat-item">
+                                <strong>Status</strong><br>
+                                <span class="prediction-status ${market.isActive ? 'active' : 'resolved'}">${market.isActive ? 'Active' : 'Closed'}</span>
+                            </div>
+                        </div>
+                    `;
+                    marketsList.appendChild(marketElement);
+                });
+
+                console.log("Markets loaded successfully:", markets);
+
+            } catch (error) {
+                console.error('Failed to load markets:', error);
+                document.getElementById('marketsList').innerHTML = '<p style="color: #e53e3e; text-align: center;">Failed to load markets from blockchain</p>';
+            }
+        }
+
+        // Load user-specific data
+        async function loadUserData() {
+            if (!isConnected) return;
+
+            try {
+                // Get user rewards
+                const rewards = await contract.getUserRewards(userAddress);
+                document.getElementById('availableRewards').textContent = `${ethers.utils.formatEther(rewards)} ETH`;
+
+                // Get user accuracy
+                const accuracy = await contract.getUserAccuracy(userAddress);
+                document.getElementById('accuracyScore').textContent = accuracy.toString();
+
+                // Load user predictions
+                await loadUserPredictions();
+
+                console.log("User data loaded successfully");
+
+            } catch (error) {
+                console.error('Failed to load user data:', error);
+                document.getElementById('availableRewards').textContent = 'Error';
+                document.getElementById('accuracyScore').textContent = 'Error';
+            }
+        }
+
+        // Load user predictions
+        async function loadUserPredictions() {
+            try {
+                const userPredictionsDiv = document.getElementById('userPredictions');
+
+                // Get current prediction ID to iterate through predictions
+                const currentId = await contract.currentPredictionId();
+                const userPredictions = [];
+
+                // Iterate through predictions to find user's predictions
+                for (let i = 1; i < currentId; i++) {
+                    try {
+                        const predictionInfo = await contract.getPredictionInfo(i);
+                        if (predictionInfo.predictor.toLowerCase() === userAddress.toLowerCase()) {
+                            userPredictions.push({
+                                id: i,
+                                stake: ethers.utils.formatEther(predictionInfo.stake),
+                                timestamp: new Date(predictionInfo.timestamp * 1000).toLocaleDateString(),
+                                deadline: new Date(predictionInfo.deadline * 1000).toLocaleDateString(),
+                                isActive: predictionInfo.isActive,
+                                isResolved: predictionInfo.isResolved,
+                                reward: ethers.utils.formatEther(predictionInfo.reward)
+                            });
+                        }
+                    } catch (error) {
+                        // Skip invalid prediction IDs
+                    }
+                }
+
+                if (userPredictions.length === 0) {
+                    userPredictionsDiv.innerHTML = '<p style="text-align: center; color: #718096;">No predictions found. Submit your first prediction above!</p>';
+                    document.getElementById('totalPredictions').textContent = '0';
+                    return;
+                }
+
+                // Display predictions
+                userPredictionsDiv.innerHTML = '';
+                userPredictions.forEach(prediction => {
+                    const statusClass = prediction.isResolved ? 'resolved' : (prediction.isActive ? 'active' : 'pending');
+                    const statusText = prediction.isResolved ? 'Resolved' : (prediction.isActive ? 'Active' : 'Pending');
+
+                    const predictionElement = document.createElement('div');
+                    predictionElement.className = 'prediction-item';
+                    predictionElement.innerHTML = `
+                        <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
+                            <h4>Prediction #${prediction.id}</h4>
+                            <span class="prediction-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; font-size: 14px;">
+                            <div><strong>Stake:</strong> ${parseFloat(prediction.stake).toFixed(4)} ETH</div>
+                            <div><strong>Submitted:</strong> ${prediction.timestamp}</div>
+                            <div><strong>Deadline:</strong> ${prediction.deadline}</div>
+                            ${prediction.isResolved ? `<div><strong>Reward:</strong> ${parseFloat(prediction.reward).toFixed(4)} ETH</div>` : ''}
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #718096;">
+                            <em>Prediction values are encrypted and private</em>
+                        </div>
+                    `;
+                    userPredictionsDiv.appendChild(predictionElement);
+                });
+
+                document.getElementById('totalPredictions').textContent = userPredictions.length.toString();
+
+            } catch (error) {
+                console.error('Failed to load user predictions:', error);
+                document.getElementById('userPredictions').innerHTML = '<p style="color: #e53e3e; text-align: center;">Failed to load predictions</p>';
+            }
+        }
+
+        // Claim available rewards
+        async function claimRewards() {
+            if (!isConnected) {
+                showStatus('rewardsStatus', 'Please connect your wallet first', 'error');
+                return;
+            }
+
+            try {
+                // Check if user has rewards to claim
+                const rewards = await contract.getUserRewards(userAddress);
+                if (rewards.eq(0)) {
+                    showStatus('rewardsStatus', 'No rewards available to claim', 'warning');
+                    return;
+                }
+
+                showStatus('rewardsStatus', 'Claiming rewards...', 'info');
+
+                // Manual gas limit for claim rewards
+                const gasLimit = ethers.BigNumber.from("150000"); // 150k gas limit
+                const gasPrice = await provider.getGasPrice();
+                const adjustedGasPrice = gasPrice.mul(120).div(100);
+
+                const tx = await contract.claimRewards({
+                    gasLimit: gasLimit,
+                    gasPrice: adjustedGasPrice
+                });
+                showStatus('rewardsStatus', 'Transaction submitted. Waiting for confirmation...', 'info');
+
+                const receipt = await tx.wait();
+                console.log('Rewards claimed successfully:', receipt);
+
+                showStatus('rewardsStatus', `Successfully claimed ${ethers.utils.formatEther(rewards)} ETH!`, 'success');
+
+                // Refresh user data
+                await loadUserData();
+
+            } catch (error) {
+                console.error('Claim rewards error:', error);
+                let errorMessage = 'Failed to claim rewards';
+
+                if (error.message.includes('No rewards to claim')) {
+                    errorMessage = 'No rewards available to claim';
+                } else if (error.message.includes('user rejected')) {
+                    errorMessage = 'Transaction was cancelled';
+                }
+
+                showStatus('rewardsStatus', errorMessage, 'error');
+            }
+        }
+
+        // Populate market selection dropdown
+        function populateMarketSelect() {
+            const select = document.getElementById('marketSelect');
+            AVAILABLE_MARKETS.forEach(market => {
+                const option = document.createElement('option');
+                option.value = market.id;
+                option.textContent = market.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Utility function to show status messages
+        function showStatus(elementId, message, type) {
+            const statusElement = document.getElementById(elementId);
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+            statusElement.classList.remove('hidden');
+
+            if (type === 'success') {
+                setTimeout(() => statusElement.classList.add('hidden'), 5000);
+            }
+        }
+
+        // Clear prediction form
+        function clearPredictionForm() {
+            document.getElementById('marketSelect').value = '';
+            document.getElementById('trendValue').value = '';
+            document.getElementById('confidence').value = '';
+            document.getElementById('stakeAmount').value = '0.01';
+        }
+
+        // Event listeners
+        document.getElementById('connectBtn').addEventListener('click', connectWallet);
+        document.getElementById('submitPredictionBtn').addEventListener('click', submitPrediction);
+        document.getElementById('refreshMarketsBtn').addEventListener('click', loadMarkets);
+        document.getElementById('createMarketsBtn').addEventListener('click', createMissingMarkets);
+        document.getElementById('refreshPredictionsBtn').addEventListener('click', loadUserData);
+        document.getElementById('claimRewardsBtn').addEventListener('click', claimRewards);
+
+        // Listen for account changes
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.on('accountsChanged', function (accounts) {
+                if (accounts.length === 0) {
+                    // User disconnected wallet
+                    isConnected = false;
+                    location.reload();
+                } else {
+                    // User switched accounts
+                    location.reload();
+                }
+            });
+
+            window.ethereum.on('chainChanged', function (chainId) {
+                // User switched networks
+                location.reload();
+            });
+        }
+
+        // Initialize application when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
