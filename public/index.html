@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Trend Predictor</title>
+    <meta name="description" content="Confidential prediction analysis platform using fully homomorphic encryption">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔒</text></svg>">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">🔒 Privacy Trend Predictor</h1>
+                <div class="wallet-section">
+                    <button id="connectWallet" class="btn btn-primary">Connect Wallet</button>
+                    <div id="walletInfo" class="wallet-info hidden">
+                        <span id="walletAddress" class="wallet-address"></span>
+                        <button id="disconnectWallet" class="btn btn-secondary">Disconnect</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Network Status -->
+            <div class="card network-status">
+                <div class="card-header">
+                    <h2>Network Status</h2>
+                </div>
+                <div class="card-body">
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="label">Contract Address:</span>
+                            <span class="value" id="contractAddress">0xAeca45f20F6a0Ca1E7be898D8201E69506c60AfE</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Network:</span>
+                            <span class="value" id="networkName">Not Connected</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Current Cycle:</span>
+                            <span class="value" id="currentCycle">-</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="label">Participants:</span>
+                            <span class="value" id="participantCount">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cycle Information -->
+            <div class="card cycle-info">
+                <div class="card-header">
+                    <h2>Current Prediction Cycle</h2>
+                    <button id="refreshCycle" class="btn btn-outline">Refresh</button>
+                </div>
+                <div class="card-body">
+                    <div class="cycle-status">
+                        <div class="status-badge" id="cycleStatus">Loading...</div>
+                        <div class="time-remaining">
+                            <div class="time-item">
+                                <span class="time-label">Submission Window:</span>
+                                <span class="time-value" id="submissionTime">-</span>
+                            </div>
+                            <div class="time-item">
+                                <span class="time-label">Analysis Window:</span>
+                                <span class="time-value" id="analysisTime">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analyst Verification -->
+            <div class="card analyst-verification">
+                <div class="card-header">
+                    <h2>Analyst Verification</h2>
+                </div>
+                <div class="card-body">
+                    <div id="verificationStatus" class="verification-status">
+                        <div class="status-message" id="verificationMessage">Connect wallet to check verification status</div>
+                    </div>
+                    <div class="verification-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Predictions:</span>
+                            <span class="stat-value" id="totalPredictions">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Accurate Count:</span>
+                            <span class="stat-value" id="accurateCount">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Last Submission:</span>
+                            <span class="stat-value" id="lastSubmission">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prediction Submission -->
+            <div class="card prediction-form">
+                <div class="card-header">
+                    <h2>Submit Trend Prediction</h2>
+                </div>
+                <div class="card-body">
+                    <form id="predictionForm" class="form">
+                        <div class="form-group">
+                            <label for="trendValue" class="form-label">Trend Value</label>
+                            <input type="number" id="trendValue" class="form-input" placeholder="Enter trend value" min="0" max="4294967295">
+                            <small class="form-help">Enter your encrypted trend prediction (0 to 4,294,967,295)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="confidenceLevel" class="form-label">Confidence Level (%)</label>
+                            <input type="range" id="confidenceLevel" class="form-range" min="0" max="100" value="50">
+                            <div class="range-display">
+                                <span>0%</span>
+                                <span id="confidenceDisplay" class="confidence-value">50%</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dataHash" class="form-label">Data Hash</label>
+                            <input type="text" id="dataHash" class="form-input" placeholder="0x..." pattern="^0x[a-fA-F0-9]{64}$">
+                            <small class="form-help">32-byte hash of your prediction data (must be unique)</small>
+                            <button type="button" id="generateHash" class="btn btn-outline btn-sm">Generate Random Hash</button>
+                        </div>
+                        <button type="submit" id="submitPrediction" class="btn btn-primary btn-full" disabled>
+                            Submit Prediction
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Analysis Controls -->
+            <div class="card analysis-controls" id="analysisControls" style="display: none;">
+                <div class="card-header">
+                    <h2>Analysis Controls</h2>
+                    <span class="owner-badge">Owner Only</span>
+                </div>
+                <div class="card-body">
+                    <div class="control-buttons">
+                        <button id="initiateCycle" class="btn btn-primary">Initiate New Cycle</button>
+                        <button id="performAnalysis" class="btn btn-success">Perform Analysis</button>
+                        <button id="verifyCurrentUser" class="btn btn-outline">Verify Current User</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Display -->
+            <div class="card results-display">
+                <div class="card-header">
+                    <h2>Confidential Results</h2>
+                </div>
+                <div class="card-body">
+                    <div class="results-controls">
+                        <div class="form-group">
+                            <label for="cycleSelect" class="form-label">Select Cycle:</label>
+                            <select id="cycleSelect" class="form-select">
+                                <option value="">Select a cycle...</option>
+                            </select>
+                        </div>
+                        <button id="requestResults" class="btn btn-primary" disabled>Request Results</button>
+                    </div>
+                    <div id="resultsContent" class="results-content hidden">
+                        <div class="result-item">
+                            <span class="result-label">Cycle:</span>
+                            <span class="result-value" id="resultCycle">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Analysis Status:</span>
+                            <span class="result-value" id="analysisStatus">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Participants:</span>
+                            <span class="result-value" id="resultParticipants">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Result Hash:</span>
+                            <span class="result-value hash" id="resultHash">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="card transaction-history">
+                <div class="card-header">
+                    <h2>Transaction History</h2>
+                    <button id="clearHistory" class="btn btn-outline btn-sm">Clear</button>
+                </div>
+                <div class="card-body">
+                    <div id="transactionList" class="transaction-list">
+                        <div class="empty-state">No transactions yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Privacy Trend Predictor. Powered by Zama FHE Technology.</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Documentation</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loadingMessage">Processing transaction...</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification hidden">
+        <div class="notification-content">
+            <span id="notificationMessage"></span>
+            <button id="closeNotification" class="notification-close">&times;</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.1/dist/ethers.umd.min.js"></script>
+    <script src="assets/app.js"></script>
+</body>
+</html>
