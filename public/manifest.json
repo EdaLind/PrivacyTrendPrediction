@@ -1,6 +1,6 @@
 {
-  "name": "Privacy Trend Predictor",
-  "short_name": "TrendPredictor",
+  "name": "Privacy Trend Prediction",
+  "short_name": "TrendPrediction",
   "description": "Confidential prediction analysis platform using fully homomorphic encryption",
   "start_url": "/",
   "display": "standalone",
