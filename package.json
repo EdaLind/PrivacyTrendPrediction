@@ -1,0 +1,11 @@
+{
+  "name": "privacy-trend-predictor-frontend",
+  "version": "1.0.0",
+  "description": "Privacy Trend Predictor - Static Frontend for Vercel",
+  "private": true,
+  "scripts": {
+    "dev": "npx http-server public -p 3000",
+    "build": "echo 'Static build complete'",
+    "start": "npx http-server public -p 3000"
+  }
+}

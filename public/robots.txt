@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://privacy-trend-predictor.vercel.app/sitemap.xml
